@@ -3,64 +3,90 @@ const todoButton = document.querySelector(".submit-button");
 const todoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-todo");
 
+class Todo {
+  constructor(task, date) {
+    this.task = task;
+    this.date = date;
+  }
+}
+//event listener
 todoButton.addEventListener("click", addTodo);
 todoList.addEventListener("click", deleteCheck);
 filterOption.addEventListener("click", filterTodo);
+window.addEventListener("load", getItemsFromLocal);
 
-let tasks = [];
-function addTodo(event) {
-  event.preventDefault();
-  let existingValue;
-  todoList.childNodes.forEach((e) => {
-    if (e.innerText == todoInput.value) {
-      existingValue = todoInput.value;
-    }
+function getItemsFromLocal() {
+  console.log(localStorage.getItem("todos"));
+  if (localStorage.getItem("todos") == null) return;
+  let todos = JSON.parse(localStorage.getItem("todos"));
+  todos.forEach((todo) => {
+    if (todo == "") return;
+    addTodo(null, todo);
   });
+}
 
-  if (
-    todoInput.value == "" ||
-    !isNaN(parseFloat(todoInput.value)) ||
-    existingValue == todoInput.value
-  ) {
-    alert("invalid input");
-  } else {
-    //todo div//
-    const todoDiv = document.createElement("div");
-    todoDiv.classList.add("todo");
-
-    //create li//
-    const newTodo = document.createElement("li");
-    newTodo.innerText = todoInput.value;
-    newTodo.classList.add("todo-item");
-    todoDiv.appendChild(newTodo);
-
-    //check mark button
-    const completedButton = document.createElement("button");
-    completedButton.innerHTML = '<i class="fas fa-check-square"></i>';
-    completedButton.classList.add("check-btn");
-    todoDiv.appendChild(completedButton);
-    //check trash button
-    const trashButton = document.createElement("button");
-    trashButton.innerHTML = '<i class="fas fa-trash"></i>';
-    trashButton.classList.add("trash-btn");
-    todoDiv.appendChild(trashButton);
-
-    /* Edit button */
-    const editButton = document.createElement("button");
-    editButton.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
-    editButton.classList.add("edit-btn");
-    todoDiv.appendChild(editButton);
-
-    //APPEND TO LIST
-
-    todoList.appendChild(todoDiv);
-
-    tasks.push({ task: todoInput.value });
-    window.localStorage.setItem("tasks", tasks);
-
-    //clear todo input
-    todoInput.value = "";
+function addTodo(_event, todoTask = todoInput.value) {
+  let existingValue;
+  //defined existing Value
+  if (localStorage.getItem("todos")) {
+    let oldData = JSON.parse(localStorage.getItem("todos"));
+    oldData.forEach((item) => {
+      if (item == todoInput.value) {
+        existingValue = todoTask;
+      }
+    });
   }
+
+  if (todoTask == "" || !isNaN(+todoTask) || existingValue == todoTask) {
+    alert("invalid input");
+    return;
+  }
+
+  //todo div//
+  const todoDiv = document.createElement("div");
+  todoDiv.classList.add("todo");
+
+  //create li//
+  const newTodo = document.createElement("li");
+  newTodo.innerText = todoTask;
+  newTodo.classList.add("todo-item");
+  todoDiv.appendChild(newTodo);
+
+  //check mark button
+  const completedButton = document.createElement("button");
+  completedButton.innerHTML = '<i class="fas fa-check-square"></i>';
+  completedButton.classList.add("check-btn");
+  todoDiv.appendChild(completedButton);
+  //check trash button
+  const trashButton = document.createElement("button");
+  trashButton.innerHTML = '<i class="fas fa-trash"></i>';
+  trashButton.classList.add("trash-btn");
+  todoDiv.appendChild(trashButton);
+
+  /* Edit button */
+  const editButton = document.createElement("button");
+  editButton.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+  editButton.classList.add("edit-btn");
+  todoDiv.appendChild(editButton);
+
+  //APPEND TO LIST
+
+  todoList.appendChild(todoDiv);
+
+  if (localStorage.getItem("todos") == null) {
+    console.log(!!todoInput.value);
+    localStorage.setItem("todos", JSON.stringify([todoInput.value]));
+  } else {
+    let oldData = JSON.parse(localStorage.getItem("todos"));
+    console.log(!!todoInput.value);
+    if (!!todoInput.value || todoInput.value != "") {
+      oldData.push(todoInput.value);
+      localStorage.setItem("todos", JSON.stringify(oldData));
+    }
+  }
+
+  //clear todo input
+  todoInput.value = "";
 }
 
 function deleteCheck(e) {
@@ -68,6 +94,12 @@ function deleteCheck(e) {
   //delete Todo
   if (item.classList[0] == "trash-btn") {
     const todo = item.parentElement;
+    let oldData = JSON.parse(localStorage.getItem("todos"));
+    console.log(oldData);
+    oldData = oldData.filter((data) => data != todo.childNodes[0].innerText);
+    console.log(oldData);
+    localStorage.setItem("todos", JSON.stringify(oldData));
+
     //Animation
     todo.classList.add("fall");
     //remove item
@@ -88,8 +120,7 @@ function deleteCheck(e) {
       let input = document.querySelector(".edit-input");
       let todos = todoList.childNodes;
 
-      console.log(typeof input.value);
-      if (input.value == "" || !isNaN(parseFloat(input.value))) {
+      if (!input.value || !isNaN(+input.value)) {
         alert("invalid input");
         return;
       }
@@ -133,4 +164,6 @@ function filterTodo(e) {
     }
   });
 }
-console.log(localStorage.getItem("tasks", tasks));
+
+/*  */
+/*   */
