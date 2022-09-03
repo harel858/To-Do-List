@@ -7,6 +7,7 @@ todoButton.addEventListener("click", addTodo);
 todoList.addEventListener("click", deleteCheck);
 filterOption.addEventListener("click", filterTodo);
 
+let tasks = [];
 function addTodo(event) {
   event.preventDefault();
   let existingValue;
@@ -53,6 +54,9 @@ function addTodo(event) {
     //APPEND TO LIST
 
     todoList.appendChild(todoDiv);
+
+    tasks.push({ task: todoInput.value });
+    window.localStorage.setItem("tasks", tasks);
 
     //clear todo input
     todoInput.value = "";
@@ -129,3 +133,4 @@ function filterTodo(e) {
     }
   });
 }
+console.log(localStorage.getItem("tasks", tasks));
