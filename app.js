@@ -45,6 +45,10 @@ function addTodo(_event, todoTask = todoInput.value, date = dateInput.value) {
   //create li//
   const newTodo = document.createElement("li");
   newTodo.innerHTML = `<p>${todoTask}</p>`;
+  if (new Date(date).getTime() < today.getTime()) {
+    newTodo.style.background = "#ff0010";
+    newTodo.style.color = "white";
+  }
   newTodo.classList.add("todo-item");
   todoDiv.appendChild(newTodo);
 
@@ -71,6 +75,7 @@ function addTodo(_event, todoTask = todoInput.value, date = dateInput.value) {
   deadline.innerText = `${date}`;
   deadline.classList.add("deadline");
   if (new Date(date).getTime() < today.getTime()) deadline.style.color = "red";
+
   todoDiv.appendChild(deadline);
 
   //APPEND TO LIST
