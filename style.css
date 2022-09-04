@@ -127,7 +127,7 @@ form button:hover {
   padding: 0;
   display: inline-block;
   font-size: 0.8em;
-  color: blue;
+  color: rgb(35, 139, 0);
   font-weight: 700;
 }
 .fa-trash,

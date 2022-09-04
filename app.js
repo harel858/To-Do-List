@@ -3,7 +3,11 @@ const todoButton = document.querySelector(".submit-button");
 const todoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-todo");
 const dateInput = document.querySelector(`.date-input`);
-
+let today = new Date();
+console.log(today.getDate());
+let current_date =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+console.log(current_date);
 //event listener
 todoButton.addEventListener("click", () => {
   if (!todoInput.value || !dateInput.value)
@@ -66,6 +70,7 @@ function addTodo(_event, todoTask = todoInput.value, date = dateInput.value) {
   const deadline = document.createElement("P");
   deadline.innerText = `${date}`;
   deadline.classList.add("deadline");
+  if (new Date(date).getTime() < today.getTime()) deadline.style.color = "red";
   todoDiv.appendChild(deadline);
 
   //APPEND TO LIST
@@ -130,37 +135,36 @@ function deleteCheck(e) {
   }
   if (item.classList[0] == "edit-btn") {
     let todo = item.parentElement;
+    let InnerText = todo.childNodes[0].innerText;
+    let innerDate = todo.childNodes[4].innerText;
+    console.log(todo.childNodes[0].innerText);
     todo.innerHTML = `<input class="todo edit-input"/>`;
     const completedButton = document.createElement("button");
     completedButton.innerHTML = '<i class="fas fa-check-square"></i>';
     completedButton.classList.add("edit-check");
     todo.appendChild(completedButton);
     completedButton.addEventListener("click", () => {
+      let oldData = JSON.parse(localStorage.getItem("todos"));
+      let { todos, deadlineDate } = oldData;
       let input = document.querySelector(".edit-input");
-      let todos = todoList.childNodes;
 
-      if (!input.value || !isNaN(+input.value)) {
+      if (!input.value || !isNaN(+input.value) || todos.includes(input.value)) {
         alert("invalid input");
         return;
       }
-      let existingValue;
-      todos.forEach((todo) => {
-        let item = todo.childNodes;
-        item.forEach((element) => {
-          if (element.innerText == input.value) {
-            existingValue = element.innerText;
-            alert("Todo is exist");
-          }
-        });
-      });
 
-      if (input.value != existingValue && input.value != "")
-        todo.innerHTML = `
+      todo.innerHTML = `
       <li class="todo-item">${input.value}</li>
       <button class="check-btn"><i class="fas fa-check-square"></i></button>
       <button class="trash-btn"><i class="fas fa-trash"></i></button>
       <button class="edit-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+      <p class="deadline">${innerDate}</p>
       `;
+      todos[todos.indexOf(InnerText)] = input.value;
+      console.log(todos);
+      let newData = { todos: [...todos], deadlineDate: [...deadlineDate] };
+      console.log(newData);
+      localStorage.setItem("todos", JSON.stringify(newData));
     });
   }
 }
@@ -183,6 +187,3 @@ function filterTodo(e) {
     }
   });
 }
-
-/*  */
-/*   */
