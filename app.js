@@ -105,15 +105,18 @@ function deleteCheck(e) {
   //delete Todo
   if (item.classList[0] == "trash-btn") {
     const todo = item.parentElement;
-    let oldData = JSON.parse(localStorage.getItem("todos"));
-    let { todos, deadlineDate } = oldData;
     const li = todo.childNodes[0];
     const deadline = todo.childNodes[4];
+
+    let oldData = JSON.parse(localStorage.getItem("todos"));
+    let { todos, deadlineDate } = oldData;
+
     todos = todos.filter((todo) => todo != li.innerText);
     console.log(todo.childNodes[4]);
     deadlineDate = deadlineDate.filter((date) => date != deadline.innerText);
+
     const newData = { todos: [...todos], deadlineDate: [...deadlineDate] };
-    console.log(newData);
+
     localStorage.setItem("todos", JSON.stringify(newData));
 
     //Animation
