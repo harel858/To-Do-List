@@ -46,7 +46,7 @@ function addTodo(_event, todoTask = todoInput.value, date = dateInput.value) {
   const newTodo = document.createElement("li");
   newTodo.innerHTML = `<p>${todoTask}</p>`;
   if (new Date(date).getTime() < today.getTime()) {
-    newTodo.style.background = "#ff0010";
+    newTodo.style.background = "#ff000";
     newTodo.style.color = "white";
   }
   newTodo.classList.add("todo-item");
