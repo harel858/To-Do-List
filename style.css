@@ -21,6 +21,14 @@ form {
   justify-content: center;
   align-items: center;
 }
+label {
+  font-size: 1.3em;
+}
+.input-container {
+  display: flex;
+  flex-direction: column;
+  margin: 2rem;
+}
 
 form input,
 form button {
@@ -28,6 +36,18 @@ form button {
   font-size: 2rem;
   border: none;
   background: white;
+}
+.todoTask {
+  margin-bottom: 1.5em;
+  font-size: 2rem;
+  border: none;
+  background: white;
+}
+.date-input {
+  height: 2rem;
+  padding: 0.5rem;
+  font-size: 2rem;
+  border: none;
 }
 
 form button {
@@ -54,8 +74,8 @@ form button:hover {
 }
 
 .todo {
+  min-height: max-content;
   margin: 0.5rem;
-  background: white;
   color: black;
   font-size: 1.5rem;
   display: flex;
@@ -65,7 +85,9 @@ form button:hover {
 }
 
 .todo li {
+  display: flex;
   flex: 1;
+  flex-direction: row;
 }
 
 .check-btn,
@@ -97,6 +119,16 @@ form button:hover {
 }
 .todo-item {
   padding: 0rem 0.5rem;
+  background: white;
+  height: 2em;
+}
+.deadline {
+  margin: 0 2em 0 2em;
+  padding: 0;
+  display: inline-block;
+  font-size: 0.8em;
+  color: blue;
+  font-weight: 700;
 }
 .fa-trash,
 .fa-check-square,

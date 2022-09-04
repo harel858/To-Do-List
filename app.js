@@ -2,45 +2,37 @@ const todoInput = document.querySelector(".todo-input");
 const todoButton = document.querySelector(".submit-button");
 const todoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-todo");
+const dateInput = document.querySelector(`.date-input`);
 
-class Todo {
-  constructor(task, date) {
-    this.task = task;
-    this.date = date;
-  }
-}
 //event listener
-todoButton.addEventListener("click", addTodo);
+todoButton.addEventListener("click", () => {
+  if (!todoInput.value || !dateInput.value)
+    return alert("todo and deadline are required");
+  addTodo();
+});
 todoList.addEventListener("click", deleteCheck);
 filterOption.addEventListener("click", filterTodo);
 window.addEventListener("load", getItemsFromLocal);
 
 function getItemsFromLocal() {
-  console.log(localStorage.getItem("todos"));
   if (localStorage.getItem("todos") == null) return;
-  let todos = JSON.parse(localStorage.getItem("todos"));
-  todos.forEach((todo) => {
-    if (todo == "") return;
-    addTodo(null, todo);
-  });
+  let oldData = JSON.parse(localStorage.getItem("todos"));
+  let { todos, deadlineDate } = oldData;
+  if (todos.length < 0 || deadlineDate.length < 0) return;
+  for (let i = 0; i < todos.length; i++) {
+    addTodo(null, todos[i], deadlineDate[i]);
+  }
 }
 
-function addTodo(_event, todoTask = todoInput.value) {
-  let existingValue;
-  //defined existing Value
+function addTodo(_event, todoTask = todoInput.value, date = dateInput.value) {
+  console.log(0);
   if (localStorage.getItem("todos")) {
     let oldData = JSON.parse(localStorage.getItem("todos"));
-    oldData.forEach((item) => {
-      if (item == todoInput.value) {
-        existingValue = todoTask;
-      }
-    });
+    let { todos, deadlineDate } = oldData;
+    if (todos.includes(todoInput.value)) return alert("todo is exist");
   }
 
-  if (todoTask == "" || !isNaN(+todoTask) || existingValue == todoTask) {
-    alert("invalid input");
-    return;
-  }
+  if (!isNaN(parseInt(todoTask))) return alert("todo is invalid");
 
   //todo div//
   const todoDiv = document.createElement("div");
@@ -48,7 +40,7 @@ function addTodo(_event, todoTask = todoInput.value) {
 
   //create li//
   const newTodo = document.createElement("li");
-  newTodo.innerText = todoTask;
+  newTodo.innerHTML = `<p>${todoTask}</p>`;
   newTodo.classList.add("todo-item");
   todoDiv.appendChild(newTodo);
 
@@ -69,20 +61,39 @@ function addTodo(_event, todoTask = todoInput.value) {
   editButton.classList.add("edit-btn");
   todoDiv.appendChild(editButton);
 
+  //Deadline
+
+  const deadline = document.createElement("P");
+  deadline.innerText = `${date}`;
+  deadline.classList.add("deadline");
+  todoDiv.appendChild(deadline);
+
   //APPEND TO LIST
 
   todoList.appendChild(todoDiv);
 
-  if (localStorage.getItem("todos") == null) {
-    console.log(!!todoInput.value);
-    localStorage.setItem("todos", JSON.stringify([todoInput.value]));
-  } else {
+  if (
+    localStorage.getItem("todos") == null &&
+    todoInput.value &&
+    dateInput.value
+  ) {
+    localStorage.setItem(
+      "todos",
+      JSON.stringify({
+        todos: [todoTask],
+        deadlineDate: [date],
+      })
+    );
+  } else if (todoInput.value && dateInput.value) {
     let oldData = JSON.parse(localStorage.getItem("todos"));
-    console.log(!!todoInput.value);
-    if (!!todoInput.value || todoInput.value != "") {
-      oldData.push(todoInput.value);
-      localStorage.setItem("todos", JSON.stringify(oldData));
-    }
+
+    let { todos, deadlineDate } = oldData;
+
+    todos = [...todos, todoInput.value];
+    deadlineDate = [...deadlineDate, dateInput.value];
+    let newData = { todos: todos, deadlineDate: deadlineDate };
+
+    localStorage.setItem("todos", JSON.stringify(newData));
   }
 
   //clear todo input
@@ -95,10 +106,15 @@ function deleteCheck(e) {
   if (item.classList[0] == "trash-btn") {
     const todo = item.parentElement;
     let oldData = JSON.parse(localStorage.getItem("todos"));
-    console.log(oldData);
-    oldData = oldData.filter((data) => data != todo.childNodes[0].innerText);
-    console.log(oldData);
-    localStorage.setItem("todos", JSON.stringify(oldData));
+    let { todos, deadlineDate } = oldData;
+    const li = todo.childNodes[0];
+    const deadline = todo.childNodes[4];
+    todos = todos.filter((todo) => todo != li.innerText);
+    console.log(todo.childNodes[4]);
+    deadlineDate = deadlineDate.filter((date) => date != deadline.innerText);
+    const newData = { todos: [...todos], deadlineDate: [...deadlineDate] };
+    console.log(newData);
+    localStorage.setItem("todos", JSON.stringify(newData));
 
     //Animation
     todo.classList.add("fall");
